@@ -8,15 +8,30 @@
 
 #include <iostream>
 #include <Windows.h>
-#include <tlhelp32.h>
+#include <tchar.h>
 
 int main() 
 {
 	DWORD processId = 0;
-	LPCSTR libraryName = "";
+	DWORD dwSize;
+	const wchar_t* dllPath = L"testdll.dll";
 	
-	HANDLE hProcess = OpenProcess(PROCESS_ALL_ACCESS, TRUE, processId);
-	HANDLE hThread = CreateRemoteThread(hProcess, NULL, 0, NU	LL, NULL, 0);
+	HANDLE hProcess = OpenProcess(PROCESS_CREATE_THREAD | PROCESS_QUERY_INFORMATION | PROCESS_VM_OPERATION | PROCESS_VM_WRITE | PROCESS_VM_READ, FALSE, processId);
+	if (hProcess == NULL) 
+	{
+		CloseHandle(hProcess);
+		return 1;
+	}
+
+	LPVOID lpRemoteThreadProcess = VirtualAllocEx(hProcess, NULL, _tcslen(dllPath) + 1, MEM_COMMIT, PAGE_EXECUTE_READWRITE);
+	if (lpRemoteThreadProcess == NULL)
+	{
+		CloseHandle(hProcess);
+		return 1;
+	}
+
+
+	HANDLE hThread = CreateRemoteThread(hProcess, NULL, 0, NULL, NULL, 0);
 
 
 
