@@ -13,8 +13,8 @@
 
 int main() 
 {	
-	DWORD processId{ 12852 }; //temporary id
-	LPCSTR dllPath = "lib//unabomber.dll";
+	DWORD processId = 8308;
+	LPCSTR dllPath = "D:\\dev\\qbinjector\\lib\\unabomber.dll";
 	SIZE_T dllSize = strlen(dllPath) + 1;
 
 	HANDLE hProcess = OpenProcess( PROCESS_ALL_ACCESS , FALSE, processId );
