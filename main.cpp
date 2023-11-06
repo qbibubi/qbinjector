@@ -20,18 +20,21 @@ int main()
 	HANDLE hProcess = OpenProcess( PROCESS_ALL_ACCESS , FALSE, processId );
 	LPVOID lpDllPath = VirtualAllocEx( hProcess, NULL, dllSize, MEM_COMMIT , PAGE_READWRITE);
 
-	WriteProcessMemory(hProcess, lpDllPath, reinterpret_cast<LPVOID>(lpDllPath), dllSize, NULL);
+	WriteProcessMemory( hProcess, lpDllPath, reinterpret_cast<LPCVOID>( dllPath ), dllSize, NULL );
 
 	HANDLE hLoadThread = CreateRemoteThread(
 		hProcess, 
 		NULL, 
 		NULL, 
-		reinterpret_cast<LPTHREAD_START_ROUTINE>(GetProcAddress(GetModuleHandleA("Kernel32.dll"), "LoadLibraryA")), lpDllPath, NULL, NULL
+		reinterpret_cast<LPTHREAD_START_ROUTINE>( GetProcAddress( GetModuleHandleA( "Kernel32.dll" ), "LoadLibraryA" ) ),
+		lpDllPath,
+		NULL,
+		NULL
 	);
 	std::cout << lpDllPath << std::endl;
 	std::cin.get();
 
-	VirtualFreeEx(hProcess, lpDllPath, dllSize, MEM_RELEASE);
-	CloseHandle(hProcess);
-	return 0;
+	VirtualFreeEx( hProcess, NULL, dllSize, MEM_RELEASE );
+	CloseHandle( hProcess );
+	return EXIT_SUCCESS;
 }
