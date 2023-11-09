@@ -20,7 +20,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="lib\assaultqb.dll" />
     <None Include=".gitattributes" />
     <None Include=".gitignore" />
     <None Include="README.md" />

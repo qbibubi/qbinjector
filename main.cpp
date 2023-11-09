@@ -9,9 +9,10 @@ int main()
 	STARTUPINFO startupInfo;
 	PROCESS_INFORMATION processInfo;
 
-	// Set the memory of startupInfo to zero
-	ZeroMemory(&startupInfo, sizeof(startupInfo));
+	// Set the memory of startupInfo and processInfo to zero
+	ZeroMemory( &startupInfo, sizeof(startupInfo) );
 	startupInfo.cb = sizeof(startupInfo);
+	ZeroMemory( &processInfo, sizeof(processInfo) );
 
 	BOOL createProcess = CreateProcessW(
 		assaultCube, 
@@ -19,7 +20,7 @@ int main()
 		NULL, 
 		NULL, 
 		NULL, 
-		CREATE_SUSPENDED, 
+		NORMAL_PRIORITY_CLASS,
 		NULL, 
 		L"C:\\Program Files (x86)\\AssaultCube 1.3.0.2",
 		&startupInfo, 
@@ -27,12 +28,14 @@ int main()
 	);
 
 	if (!createProcess) {
-		MessageBoxW(NULL, L"Failed to create process", L"Error", MB_ICONERROR);
+		MessageBoxW( NULL, L"Failed to create process", L"Error", MB_ICONERROR );
+		CloseHandle( processInfo.hProcess );
 		return EXIT_FAILURE;
 	}
 
+
 	// Inject DLL into the suspended process
-	LPCSTR dllPath = "D:\\dev\\qbinjector\\lib\\assaultqb.dll";
+	LPCSTR dllPath = "D:\\dev\\assaultqb\\assaultqb\\bin\\Win32\\Debug\\assaultqb.dll";
 	SIZE_T dllSize = strlen(dllPath) + 1;
 	LPVOID lpDllPath = VirtualAllocEx( processInfo.hProcess, NULL, dllSize, MEM_COMMIT , PAGE_READWRITE);
 
@@ -48,16 +51,19 @@ int main()
 		processInfo.hProcess,
 		NULL, 
 		NULL, 
-		reinterpret_cast<LPTHREAD_START_ROUTINE>( GetProcAddress( GetModuleHandleA( "Kernel32.dll" ), "LoadLibraryA" ) ),
+		reinterpret_cast<LPTHREAD_START_ROUTINE>( GetProcAddress(GetModuleHandleA( "Kernel32.dll" ), "LoadLibraryA") ),
 		lpDllPath,
 		NULL,
 		NULL
 	);
 	std::cout << lpDllPath << " " << processInfo.hProcess << std::endl;
-	MessageBoxW(NULL , L"Sucesfully injected at ", L"qbinjector", MB_ICONINFORMATION);
-	ResumeThread(processInfo.hThread);
 
-	VirtualFreeEx( processInfo.hProcess, NULL, dllSize, MEM_RELEASE );
+
+	MessageBoxW(NULL , L"Sucesfully injected at ", L"qbinjector", MB_ICONINFORMATION);
+	VirtualFreeEx( processInfo.hProcess, NULL, 0, MEM_RELEASE );
+	WaitForSingleObject( processInfo.hProcess, INFINITE);
 	CloseHandle( processInfo.hProcess );
+	CloseHandle(processInfo.hThread);
+
 	return EXIT_SUCCESS;
 }
