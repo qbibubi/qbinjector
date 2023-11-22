@@ -9,9 +9,7 @@
     <img alt="Static Badge" src="https://img.shields.io/badge/arch-x64-green?style=for-the-badge">
 </div>
 
-
 # qbinjector
-
 
 
 # TODO
