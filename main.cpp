@@ -22,14 +22,14 @@ int main()
 	}
 
 	if (!WriteProcessMemory(
-		hProcess,
-		lpDllPath,
-		dllPath,
-		dllSize,
-		0)
+      hProcess,
+      lpDllPath,
+      dllPath,
+      dllSize,
+      0)
 		) 
 	{
-		std::cout << "Failed to write process memoery" << std::endl;
+		std::cout << "Failed to write process memory" << std::endl;
 		return EXIT_FAILURE;
 	}
 
